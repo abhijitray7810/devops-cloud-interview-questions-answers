@@ -10,6 +10,8 @@ https://docs.aws.amazon.com/pdfs/Route53/latest/DeveloperGuide/route53-dg.pdf
 <img width="1440" height="594" alt="image" src="https://github.com/user-attachments/assets/0883fb3c-0376-47a1-8ac9-0dd4252df601" />
 <img width="1440" height="594" alt="image" src="https://github.com/user-attachments/assets/0f189d5d-c296-4b83-92ba-2978529aa9b3" />
 <img width="1440" height="640" alt="image" src="https://github.com/user-attachments/assets/1a84a082-dde4-4ce1-b304-a24aeb7e67bd" />
+<img width="1440" height="644" alt="image" src="https://github.com/user-attachments/assets/41cadb35-ab8b-43d9-871a-c41a03928a53" />
+
 
 
 
