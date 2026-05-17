@@ -1,6 +1,3 @@
-# DevOps / AWS / Terraform Interview Questions & Answers (`README.md`)
-
-````md
 # DevOps Interview Preparation - AWS, Terraform, Incident Handling
 
 ---
