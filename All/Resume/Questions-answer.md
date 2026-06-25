@@ -9,7 +9,7 @@
 2. [HR & Behavioral Questions](#hr--behavioral-questions)
 3. [Linux & Bash Scripting](#linux--bash-scripting)
 4. [Networking Fundamentals](#networking-fundamentals)
-5. [Git & Version Control](#git--version-control)
+5. [Git & Version Control](#git--version-control) 
 6. [Docker & Containerization](#docker--containerization)
 7. [Kubernetes (K8s)](#kubernetes-k8s)
 8. [Terraform & IaC](#terraform--iac) 
