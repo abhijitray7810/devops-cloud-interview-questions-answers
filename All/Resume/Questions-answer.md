@@ -2,7 +2,7 @@
 ## Abhijit Ray — DevOps / Cloud / Platform Engineer
  
 ---  
-  
+   
 ## 📌 Table of Contents  
   
 1. [Self Introduction](#self-introduction)  
