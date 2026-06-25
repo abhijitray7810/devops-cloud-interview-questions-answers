@@ -5,7 +5,7 @@
  
 ## 📌 Table of Contents 
  
-1. [Self Introduction](#self-introduction)
+1. [Self Introduction](#self-introduction) 
 2. [HR & Behavioral Questions](#hr--behavioral-questions)
 3. [Linux & Bash Scripting](#linux--bash-scripting)
 4. [Networking Fundamentals](#networking-fundamentals) 
