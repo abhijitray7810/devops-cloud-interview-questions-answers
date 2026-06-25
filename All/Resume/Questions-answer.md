@@ -12,7 +12,7 @@
 5. [Git & Version Control](#git--version-control)
 6. [Docker & Containerization](#docker--containerization)
 7. [Kubernetes (K8s)](#kubernetes-k8s)
-8. [Terraform & IaC](#terraform--iac)
+8. [Terraform & IaC](#terraform--iac) 
 9. [AWS Cloud](#aws-cloud)
 10. [CI/CD — GitHub Actions, Jenkins, ArgoCD, Tekton](#cicd--github-actions-jenkins-argocd-tekton)
 11. [Observability — Prometheus, Grafana, Loki](#observability--prometheus-grafana-loki)
