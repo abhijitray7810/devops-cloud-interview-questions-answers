@@ -94,7 +94,7 @@ Sample 1: [10,6,10,-3,1,1,4,-4,-1,1,-7] -> 4Constraints: 1 <= n <= 2_10^5, -10^9
 
 
 
-Tomar 2 number er question er full `README.md` ta niche dilam - tomar image theke full text niye banano:
+```
 # Question 2 - Fix The Browse Engine (S2)
 
 ## Context
