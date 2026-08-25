@@ -276,7 +276,7 @@ with open('data/requests.jsonl') as f:
         
         matched_count = len(eligible)
 
-        # Rank
+        # Rank 
         eligible.sort(key=lambda x: (-x['popularity_score'], x['product_id']))
 
         top = eligible[:max_res]
