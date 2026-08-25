@@ -1,3 +1,217 @@
+# Amazon Assessment - S1 & S2 Solutions
+
+## Question 1: Amazon Warehouse - Optimal Inventory
+
+### Problem Statement
+The manager of the Amazon warehouse has decided to make changes to the inventory. Currently, the inventory has `n` products, where the quality of the `i-th` product is represented by `quality[i]`.
+
+The manager wants to create an **optimal inventory**, where:
+- **All occurrences of each quality value must be contiguous.**
+
+### Operation
+You can perform any number of times:
+1. Choose two quality values `x` and `y`.
+2. Replace every product with quality `x` to have quality `y` instead.
+3. This operation costs `num_replacements` units, where `num_replacements` is the number of products whose quality was changed.
+
+Find the minimum amount of money to convert the inventory into an optimal inventory.
+
+> Note: Quality can be negative.
+
+### Constraints
+- `1 <= n <= 2 * 10^5`
+- `-10^9 <= quality[i] <= 10^9`
+
+### Examples
+- `n=7, quality=[7,7,5,7,3,5,3]` -> `4`
+- Sample 0: `[1,2,1,2,1]` -> `2`
+- Sample 1: `[10,6,10,-3,1,1,4,-4,-1,1,-7]` -> `4`
+
+### Function Signature
+```python
+def getMinAmount(quality: List[int]) -> int:
+### Solution Approach - Weighted Interval Scheduling
+1. *Frequency:* `freq[v]` = total count of value `v` in original array. This is the cost to delete `v`.
+2. *Compression:* Remove consecutive duplicates: `[1][1][2][1]` -> `[1][2][1]`.
+3. *Interval:* For each distinct value, find `first[v]` and `last[v]` in compressed array.
+4. *Conflict Rule:* Two values can both be kept only if their intervals are disjoint (`last_a < first_b`). Otherwise one appears inside the other.
+5. *Reduction:* Select a set of disjoint intervals with maximum total profit (`profit = freq[v]`). This is classic Weighted Interval Scheduling.
+6. *Answer:* `minCost = n - maxKeptProfit`
+
+### Complexity
+- Time: `O(n log n)`
+- Space: `O(n)`
+
+### Implementation - Python 3
+import bisect
+from collections import defaultdict
+from typing import List
+
+def getMinAmount(quality: List[int]) -> int:
+    n = len(quality)
+    if n == 0:
+        return 0
+
+    freq = defaultdict(int)
+    for v in quality:
+        freq[v] += 1
+
+    comp = []
+    for v in quality:
+        if not comp or comp[-1]!= v:
+            comp.append(v)
+
+    first, last = {}, {}
+    for i, v in enumerate(comp):
+        if v not in first:
+            first[v] = i
+        last[v] = i
+
+    intervals = [] # (last, first, profit)
+    for v in first:
+        intervals.append((last[v], first[v], freq[v]))
+
+    intervals.sort()
+    ends = [it[0] for it in intervals]
+
+    dp = [0] * len(intervals)
+    for i in range(len(intervals)):
+        last_i, first_i, profit_i = intervals[i]
+        j = bisect.bisect_left(ends, first_i) - 1
+        take = profit_i + (dp[j] if j >= 0 else 0)
+        not_take = dp[i-1] if i > 0 else 0
+        dp[i] = max(take, not_take)
+
+    max_kept = dp[-1] if dp else 0
+    return n - max_kept
+---
+
+## Question 2: Fix The Browse Engine (S2)
+
+### Context
+When a customer opens a category page like Electronics, they expect to see everything under it: phones, cameras, smart home devices, etc.
+
+Categories are organized in a parent-child hierarchy, so browsing a category must include products assigned to that category and every level beneath it.
+
+Results should also be region-specific and ranked by popularity.
+
+### Issue
+The current browse engine is broken. It misses products from subcategories, surfaces products from unrelated categories, leaks listings from other regions, and returns results in the wrong order.
+
+### Input Files
+
+#### 1. Categories - `data/categories.json`
+Flat list of category records.
+- `category_id` - unique identifier
+- `name` - display name
+- `parent_id` - parent category ID (null means top-level)
+
+Top-level categories are separate. Browsing `ELEC` must never return anything from `HOME`.
+
+#### 2. Product listings - `data/products.jsonl`
+One JSON object per line.
+
+#### 3. Browse requests - `data/requests.jsonl`
+One JSON object per line.
+- `query_id` - unique identifier
+- `category_id` - category being browsed
+- `region` - region to filter by
+- `max_results` - number of results to return; if missing, default to 5
+
+### Output
+*File:* `data/results.json`
+A JSON array with one object per request, in the same order as the input.
+- `query_id` - copied from input
+- `matched_count` - number of eligible products after region filtering (before applying max_results)
+- `products` - up to max_results products
+
+### Correct Browse Engine Logic
+
+#### Step 1: Collect included categories
+Starting from the requested `category_id`, include:
+- that category itself
+- every subcategory under it (children, grandchildren, etc.)
+
+If the `category_id` does not exist, return `matched_count: 0` with an empty products list.
+
+#### Step 2: Filter eligible products
+From products assigned to the included categories, keep only those where the region matches the request region exactly (case-sensitive).
+
+The count after this step is `matched_count`.
+
+#### Step 3: Rank and return
+Sort eligible products by:
+- `popularity_score` (high -> low)
+- `product_id` (low -> high) as tie-breaker
+
+Return the first `max_results`.
+
+### Fixed Solution - Python
+import json
+from collections import defaultdict, deque
+
+# Load categories
+with open('data/categories.json') as f:
+    cat_data = json.load(f)['categories']
+
+children = defaultdict(list)
+all_ids = set()
+for c in cat_data:
+    all_ids.add(c['category_id'])
+    if c['parent_id']:
+        children[c['parent_id']].append(c['category_id'])
+
+def get_included(category_id):
+    if category_id not in all_ids:
+        return None
+    included = set()
+    q = deque([category_id])
+    while q:
+        cur = q.popleft()
+        included.add(cur)
+        for ch in children.get(cur, []):
+            q.append(ch)
+    return included
+
+# Load products
+prod_by_cat = defaultdict(list)
+with open('data/products.jsonl') as f:
+    for line in f:
+        p = json.loads(line)
+        prod_by_cat[p['category_id']].append(p)
+
+# Process requests
+results = []
+with open('data/requests.jsonl') as f:
+    for line in f:
+        req = json.loads(line)
+        qid = req['query_id']
+        cat_id = req['category_id']
+        region = req['region']
+        max_res = req.get('max_results', 5)
+
+        included = get_included(cat_id)
+        if included is None:
+            results.append({"query_id": qid, "matched_count": 0, "products": []})
+            continue
+
+        eligible = []
+        for inc_cat in included:
+            for p in prod_by_cat.get(inc_cat, []):
+                if p['region'] == region:
+                    eligible.append(p)
+
+        matched_count = len(eligible)
+        eligible.sort(key=lambda x: (-x['popularity_score'], x['product_id']))
+
+        results.append({
+            "query_id": qid,
+            "matched_count": matched_count,
+            "products": eligible[:max_res]
+        })
+
+with open('data/results.json', 'w') as out:
+    json.dump(results, out, indent=2)
 # Amazon Warehouse - Optimal Inventory (Question 1)
 
 ## Problem Statement
