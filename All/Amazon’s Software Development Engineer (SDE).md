@@ -1,6 +1,6 @@
 # Amazon Assessment - S1 & S2 Solutions
 
-## Question 1: Amazon Warehouse - Optimal Inventory
+## Question 1: Amazon Warehouse - Optimal Inventory 
 
 ### Problem Statement
 The manager of the Amazon warehouse has decided to make changes to the inventory. Currently, the inventory has `n` products, where the quality of the `i-th` product is represented by `quality[i]`.
