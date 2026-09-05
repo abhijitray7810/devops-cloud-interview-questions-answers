@@ -1,0 +1,412 @@
+GOCC139: Google's Online Challenge — Coding Problems
+
+This README contains solutions for the two coding questions from the Invitation for GOCC139: Google's Online Challenge — IN 2027 Coding SAD Apprentice II.
+
+Question 1 — Lighthouse Flag Broadcast
+
+Problem Statement
+
+Every evening, the keeper of the Saltmere lighthouse raises a sequence of signal flags along the harbour mast. Each flag contains one lowercase letter, and the flags remain in the order in which they were raised.
+
+The glow strength of a flag is determined by its letter:
+
+a = 1
+
+b = 2
+
+...
+
+z = 26
+
+The keeper must select exactly k flags from the sequence without changing their original order.
+
+The total glow strength of the selected flags must be at least f.
+
+Among all valid selections, return the lexicographically smallest string formed by the selected flags.
+
+Function
+
+def minFlagBroadcastCode(n, s, k, f):
+
+Parameters
+
+n: Number of flags.
+
+s: String containing n lowercase English letters.
+
+k: Exact number of flags to select.
+
+f: Minimum required total glow strength.
+
+Constraints
+
+1 ≤ n ≤ 1,000,000
+
+1 ≤ k ≤ n
+
+s contains only lowercase English letters.
+
+len(s) == n
+
+0 ≤ f ≤ maximum possible strength obtainable by selecting any k flags.
+
+At least one valid selection exists.
+
+Approach
+
+The solution constructs the answer from left to right.
+
+At every position, it tries possible characters that can become the next character of the answer. A character is accepted only when:
+
+There are enough remaining characters to complete the required number of selections.
+
+The required strength can still be achieved using the remaining characters.
+
+To test condition 2 efficiently, the algorithm maintains the frequency of every letter (a to z) and calculates the maximum possible strength obtainable from a given number of remaining characters by taking the largest-valued letters first.
+
+Because there are only 26 possible character values, calculating the maximum possible remaining strength takes at most 26 iterations.
+
+Python Solution
+
+def minFlagBroadcastCode(n, s, k, f):
+    count = [0] * 27
+    total_sum = 0
+
+    for ch in s:
+        v = ord(ch) - 96
+        count[v] += 1
+        total_sum += v
+
+    def max_sum_of_t(t):
+        if t <= 0:
+            return 0
+
+        ans = 0
+
+        for v in range(26, 0, -1):
+            if count[v]:
+                take = count[v]
+
+                if take > t:
+                    take = t
+
+                ans += v * take
+                t -= take
+
+                if t == 0:
+                    break
+
+        return ans
+
+    ans = []
+    start = 0
+    remaining = k
+    required = f
+
+    while remaining > 0:
+        last = n - remaining
+        best_char = None
+        best_pos = -1
+        scanned = []
+
+        for i in range(start, last + 1):
+            v = ord(s[i]) - 96
+
+            count[v] -= 1
+            total_sum -= v
+            scanned.append((i, v))
+
+            need = required - v
+
+            if need <= 0:
+                feasible = True
+            else:
+                max_possible = max_sum_of_t(remaining - 1)
+                feasible = max_possible >= need
+
+            if feasible:
+                if best_char is None or v < best_char:
+                    best_char = v
+                    best_pos = i
+
+                    if v == 1:
+                        break
+
+        # Restore characters after the chosen position.
+        for pos, v in scanned:
+            if pos > best_pos:
+                count[v] += 1
+                total_sum += v
+
+        ans.append(s[best_pos])
+
+        start = best_pos + 1
+        remaining -= 1
+        required -= best_char
+
+    return ''.join(ans)
+
+
+n = int(input())
+s = input()
+k = int(input())
+f = int(input())
+
+out_ = minFlagBroadcastCode(n, s, k, f)
+print(out_)
+
+Complexity
+
+There are only 26 possible letter values.
+
+Time: Approximately O(n × 26 × k) in the straightforward worst-case analysis.
+
+Space: O(26 + k) for the frequency table, temporary scanned positions, and answer.
+
+Important: Since n can be as large as 1,000,000, the implementation should be benchmarked carefully against the challenge's time limit. The core idea uses the fact that the alphabet contains only 26 values.
+
+Question 2 — Concord Interval Census
+
+Problem Statement
+
+A geophysics team records n consecutive pressure readings in an array a.
+
+For every contiguous stretch, its spread is:
+
+maximum value in the stretch - minimum value in the stretch
+
+A stretch is considered concordant when:
+
+lo <= spread <= hi
+
+A single reading has spread 0.
+
+Count the number of contiguous stretches whose spread lies within [lo, hi].
+
+Two stretches with different index ranges are counted separately, even if their values are identical.
+
+Function
+
+def countSpreadWindows(n, lo, hi, a):
+
+Parameters
+
+n: Number of readings.
+
+lo: Minimum allowed spread, inclusive.
+
+hi: Maximum allowed spread, inclusive.
+
+a: Array containing n integers.
+
+Constraints
+
+1 ≤ n ≤ 1,000,000
+
+0 ≤ lo ≤ hi ≤ 1,000,000,000
+
+1 ≤ a[i] ≤ 1,000,000,000
+
+Sample Input
+
+5
+0
+2
+1 3 2 4 3
+
+Sample Output
+
+13
+
+Efficient Approach
+
+We can count the required windows using:
+
+count(spread <= hi) - count(spread < lo)
+
+Since:
+
+spread < lo
+
+is equivalent to:
+
+spread <= lo - 1
+
+we calculate:
+
+answer = countAtMost(hi) - countAtMost(lo - 1)
+
+Counting subarrays with max - min <= limit
+
+Use a sliding window with two monotonic deques:
+
+maxDeque stores indices whose values are decreasing, so the front is the maximum.
+
+minDeque stores indices whose values are increasing, so the front is the minimum.
+
+For each right endpoint:
+
+Add the new element to both deques.
+
+If max - min > limit, move the left endpoint forward.
+
+Every valid window ending at right contributes:
+
+right - left + 1
+
+This gives an O(n) solution.
+
+Python Solution
+
+from collections import deque
+
+
+def count_at_most(a, limit):
+    if limit < 0:
+        return 0
+
+    max_deque = deque()
+    min_deque = deque()
+
+    left = 0
+    result = 0
+
+    for right, value in enumerate(a):
+
+        # Maintain decreasing deque for maximum.
+        while max_deque and a[max_deque[-1]] <= value:
+            max_deque.pop()
+
+        max_deque.append(right)
+
+        # Maintain increasing deque for minimum.
+        while min_deque and a[min_deque[-1]] >= value:
+            min_deque.pop()
+
+        min_deque.append(right)
+
+        # Shrink window until max - min <= limit.
+        while a[max_deque[0]] - a[min_deque[0]] > limit:
+
+            if max_deque[0] == left:
+                max_deque.popleft()
+
+            if min_deque[0] == left:
+                min_deque.popleft()
+
+            left += 1
+
+        # All subarrays [left..right], [left+1..right], ...
+        # are valid.
+        result += right - left + 1
+
+    return result
+
+
+def countSpreadWindows(n, lo, hi, a):
+    return count_at_most(a, hi) - count_at_most(a, lo - 1)
+
+
+n = int(input())
+lo = int(input())
+hi = int(input())
+a = list(map(int, input().split()))
+
+print(countSpreadWindows(n, lo, hi, a))
+
+Why the Second Solution Works
+
+Suppose we want:
+
+lo <= max(a[l:r]) - min(a[l:r]) <= hi
+
+First count all windows satisfying:
+
+spread <= hi
+
+Then remove all windows satisfying:
+
+spread < lo
+
+Therefore:
+
+valid windows
+=
+windows with spread <= hi
+-
+windows with spread < lo
+
+And because all readings are integers:
+
+spread < lo
+
+is the same as:
+
+spread <= lo - 1
+
+Hence:
+
+count_at_most(hi) - count_at_most(lo - 1)
+
+Complexity of Question 2
+
+Each array index is inserted into and removed from each deque at most once.
+
+Therefore:
+
+Time: O(n)
+
+Space: O(n) in the worst case for the deques.
+
+For n = 1,000,000, this linear-time approach is appropriate and much more scalable than checking every subarray.
+
+Quick Comparison
+
+Question
+
+Main Technique
+
+Time
+
+Space
+
+Lighthouse Flag Broadcast
+
+Greedy + feasibility check
+
+Depends on implementation; straightforward version can be high
+
+O(n + 26)
+
+Concord Interval Census
+
+Sliding Window + Monotonic Deques
+
+O(n)
+
+O(n)
+
+Key Interview / OA Takeaways
+
+Question 1
+
+The important idea is:
+
+Build the lexicographically smallest answer from left to right while never choosing a character that makes completing a valid selection impossible.
+
+The feasibility check is what makes the greedy choice safe.
+
+Question 2
+
+The key transformation is:
+
+lo <= max - min <= hi
+
+becomes:
+
+count(max - min <= hi)
+-
+count(max - min <= lo - 1)
+
+Then monotonic deques allow the maximum and minimum of the current sliding window to be maintained in O(1) amortized time per element.
+
