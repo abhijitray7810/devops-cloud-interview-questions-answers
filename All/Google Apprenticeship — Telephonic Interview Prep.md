@@ -56,7 +56,7 @@ Keep most answers between **30 seconds and 2 minutes** unless the interviewer as
 
 > "Hi, I'm Abhijit Ray. I recently completed my B.Tech in Computer Science and Engineering. During my studies, I became particularly interested in software development, cloud computing, DevOps, and distributed systems.
 >
-> I have worked with technologies such as Python, C++, JavaScript, React, Node.js, Docker, Kubernetes, Terraform, AWS, CI/CD tools, and monitoring tools.
+> I have worked with technologies such as Python, C++, Docker, Kubernetes, Terraform, AWS, CI/CD tools, and monitoring tools.
 >
 > One area I've spent significant time on is building and deploying cloud-native applications. For example, I worked on a microservices-based platform where I explored containerization, Kubernetes orchestration, autoscaling, observability, and CI/CD.
 >
