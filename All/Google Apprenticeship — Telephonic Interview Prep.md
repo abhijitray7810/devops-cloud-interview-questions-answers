@@ -4,7 +4,7 @@
  
 **IN 2027 Coding SAD Apprentice II**
 
-## Interview Stage
+## Interview Stage 
 
 **Telephonic Interview – Technical Skills + Cultural Fit**
  
