@@ -1,7 +1,7 @@
 # Google Apprentice – Telephonic Interview Preparation
 
 ## Role
-
+ 
 **IN 2027 Coding SAD Apprentice II**
 
 ## Interview Stage
