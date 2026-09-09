@@ -5,7 +5,7 @@
 ### Problem Statement
 The manager of the Amazon warehouse has decided to make changes to the inventory. Currently, the inventory has `n` products, where the quality of the `i-th` product is represented by `quality[i]`. 
   
-The manager wants to create an **optimal inventory**, where:
+The manager wants to create an **optimal inventory**, where: 
 - **All occurrences of each quality value must be contiguous.**
 
 ### Operation
