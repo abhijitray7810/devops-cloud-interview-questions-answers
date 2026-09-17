@@ -1,5 +1,5 @@
 # Amazon Assessment - S1 & S2 Solutions 
- 
+  
 ## Question 1: Amazon Warehouse - Optimal Inventory 
    
 ### Problem Statement
