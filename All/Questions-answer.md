@@ -1,5 +1,4 @@
 # DevOps Interview Preparation - AWS, Terraform, Incident Handling 
-
 ---
 
 # 1. Self Introduction
